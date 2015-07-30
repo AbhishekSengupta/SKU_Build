@@ -1,4 +1,5 @@
-var serviceUrl="../SKUBuild/services/uploadService"
+var serviceUrl="../SKUBuild/services/uploadService";
+var downloadUrl="../SKUBuild/services/download?fileName=";
 var pocApp = angular.module('pocApp', ["ngRoute"]);
   
 
@@ -17,14 +18,8 @@ pocApp.config(['$routeProvider',
   }]);
   
 
-
-
-
 pocApp.controller('skuUploadController', function($scope,$http) {
-	
-	
-	
-    $scope.placeholder1="Choose File..";
+	$scope.placeholder1="Choose File..";
     $scope.placeholder2="Choose File..";
     $scope.placeholder3="Choose File..";
     $scope.percentage="0%";
@@ -35,6 +30,7 @@ pocApp.controller('skuUploadController', function($scope,$http) {
     $scope.file_two;
     $scope.file_three;
     $scope.fileArray=new FormData();
+    $scope.filename="";
     $("#uploadBtn_2").prop("disabled", true);
     $("#uploadBtn_3").prop("disabled", true);
     $("#uploadFile").prop("disabled", true);
@@ -107,25 +103,6 @@ pocApp.controller('skuUploadController', function($scope,$http) {
             			$scope.fileArray.append("ContentTemplateGenerator",$scope.file_one);
             			$scope.fileArray.append("AttributeReport",$scope.file_two);
             			$scope.fileArray.append("StaplesMasterStyleGuide",$scope.file_three);
-            			//alert($scope.fileArray);
-	            		/*$scope.message="Succesfully uploaded..";
-	            		$scope.appTable={"show":true};
-	            		$scope.files=[
-	            	                  {
-	            	                      "index":"1",
-	            	                      "name": "File One",
-	            	                      "status": "Successful"
-	            	                  },
-	            	                  {
-	            	                	  "index":"2",
-	            	                	  "name": "File Two",
-	            	                      "status": "Successful"
-	            	                  },
-	            	                  {
-	            	                	  "index":"3",
-	            	                	  "name": "File Three",
-	            	                      "status": "Successful"
-	            	                  }]; */
             			$http.post(serviceUrl ,$scope.fileArray, {
             			    // this cancels AngularJS normal serialization of request
             			    transformRequest: angular.identity,
@@ -135,7 +112,7 @@ pocApp.controller('skuUploadController', function($scope,$http) {
             			})
             			.success(function(data, status, headers, config)
             			{
-            				$scope.message=data[0];
+            				$scope.filename=data[0];
             				$scope.appTable={"show":true};
             			})
             			.error(function(data, status, headers, config)
@@ -143,6 +120,11 @@ pocApp.controller('skuUploadController', function($scope,$http) {
             				$scope.message=data[0];
             			});
             	}};
+            	
+            	$scope.download=function()
+            	{
+            		window.open(downloadUrl+$scope.filename);
+            	}
 });
 
 pocApp.controller('errorController', function($scope) {

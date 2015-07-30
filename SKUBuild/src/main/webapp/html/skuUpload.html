@@ -37,17 +37,18 @@
 
 <div class="row">&nbsp</div>
 <div class="row" ng-show="appTable.show">
-<table class="table table-striped table-bordered table-hover">
-  <thead><tr>
-  	<th>Serial Number</th>
-    <th>File Name</th>
-    <th>Processing Status</th>
-    </tr></thead>
-  <tbody>
-  <tr ng-repeat="file in files">
-  	<td>{{file.index}}</td>
-   	<td>{{file.name }}</td>
-    <td>{{file.status }}</td>
-  </tr></tbody>
-</table>
+	<table class="table table-striped table-bordered table-hover">
+	  <thead>
+	  	<tr>
+		    <th>File Name</th>
+		    <th>Action</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+		  <tr>
+		  	<td style="width:90%">{{filename}}</td>
+		   	<td style="width:10%"><button type="button" class="btn btn-info" ng-click="download()">Download</button></td>
+		  </tr>
+	  </tbody>
+	</table>
 </div>
