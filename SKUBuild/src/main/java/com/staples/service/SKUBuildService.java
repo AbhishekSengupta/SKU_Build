@@ -11,8 +11,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -83,12 +85,13 @@ public class SKUBuildService
 			XSSFWorkbook cTGWorkbook_temp=new XSSFWorkbook(fin);
 			FileOutputStream fout=new FileOutputStream(file);
 			//cTGWorkbook_temp.write(fout);
-			writeCTGI(cTGWorkbook_temp,fout,contentTemplateGenerator,s);
+			XSSFWorkbook cTGWorkbookWithCTG=writeCTGI(cTGWorkbook_temp,contentTemplateGenerator,s,staplesMasterStyleGuide,attributeReport);
+			//XSSFWorkbook cTGWorkbookWithAttr=writeAttribute(cTGWorkbookWithCTG, staplesMasterStyleGuide, s);
 			//fout.close();
 			//fin.close();
 			//fout=new FileOutputStream(file);
-			
-			
+			cTGWorkbookWithCTG.write(fout);
+			fout.close();
 			System.out.println("Output File Format Created!!");
 			fileNameList.add(fileName);
 		}
@@ -148,20 +151,18 @@ public class SKUBuildService
 	    }
 	 
 	  
-	  public void writeCTGI(XSSFWorkbook cTGWorkbook,FileOutputStream fileOut,MultipartFile fileIn,String classId)
+	  public XSSFWorkbook writeCTGI(XSSFWorkbook cTGWorkbook,MultipartFile fileIn,String classId,MultipartFile staplesMasterStyleGuide, MultipartFile attributeReport)
 	  {
 		  try 
 		  {
-			 // FileInputStream fin=new FileInputStream(fileIn.getOriginalFilename());
-			  //FileInputStream fOutputStream=new FileInputStream(fileIn.getOriginalFilename());
+			List<XSSFCell> attributeCell=  writeStyle(staplesMasterStyleGuide,classId);
+			List<String> attributes=getAttributes(attributeReport,classId);
 			XSSFWorkbook cTGWorkbookFin = new XSSFWorkbook(fileIn.getInputStream());
-			@SuppressWarnings("deprecation")
-			//XSSFWorkbook cTGWorkbookFout = new XSSFWorkbook(fileOut);
 			XSSFSheet worksheetIn = cTGWorkbookFin.getSheetAt(0);
 			XSSFSheet worksheetOut = cTGWorkbook.getSheetAt(0);
-			//FileOutputStream fout=new FileOutputStream(fileOut.getAbsolutePath());
 			int i =1;
 			int j=4;
+			XSSFCell cell=null;
 			for(i=1;i < worksheetIn.getLastRowNum();i++) 
 			{
 				XSSFRow rowIn = worksheetIn.getRow(i);
@@ -186,19 +187,103 @@ public class SKUBuildService
 					XSSFCell cell6 = rowOut.createCell(179);
 					if(rowIn.getCell(5)!=null)
 						cell6.setCellValue(rowIn.getCell(5).getNumericCellValue());
+					
+					XSSFCell cell7 = rowOut.createCell(26);
+					cell7=attributeCell.get(0);
+					
+					int z=1;
+					for(int k=36;k<48;k++)
+					{
+						cell=rowOut.createCell(k);
+						cell.setCellValue((attributeCell.get(z)).getStringCellValue());
+						z++;
+					}
+					int counter=1;
+					int cellCount=63;
+					for(String attribute:attributes)
+					{
+						
+						if(counter<=50)
+						{
+							String lable=attribute.split("###")[0];
+							String value=attribute.split("###")[1];
+							cell=rowOut.createCell(cellCount);
+							cell.setCellValue(lable);
+							cell=rowOut.createCell(cellCount+1);
+							cell.setCellValue(value);
+							counter++;
+							cellCount+=2;
+						}
+						
+					}
 				}
 				j++;
 				
-			}
-			//fin.close();
-			cTGWorkbook.write(fileOut);
-			//cTGWorkbookFout.write(fout);
-			fileOut.close();
+			}			
 		  } 
 		 catch (IOException e) 
 		 {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		 }
+		 return cTGWorkbook;
+	  }
+	  
+	  public List<XSSFCell> writeStyle(MultipartFile fileIn,String classId)
+	  {
+		  List<XSSFCell> attributeCell = new ArrayList<XSSFCell>();
+		  try
+		  {
+			  XSSFWorkbook cTGWorkbookFin = new XSSFWorkbook(fileIn.getInputStream());
+			  XSSFSheet worksheetIn = cTGWorkbookFin.getSheetAt(0);
+			  for(int i=1;i < worksheetIn.getLastRowNum();i++) 
+			  {
+				  XSSFRow rowIn = worksheetIn.getRow(i);
+				  if(XSSFCell.CELL_TYPE_NUMERIC==rowIn.getCell(7).getCellType())
+				  {
+					  if(rowIn.getCell(7).getNumericCellValue()==Integer.parseInt(classId))
+					  {
+						  attributeCell.add(rowIn.getCell(14));
+						  int j=20;
+						  for(;j<44;)
+						  {
+							  attributeCell.add(rowIn.getCell(j));
+							  j+=2;
+						  }
+						  break;
+					  }
+				  }
+			  }
+		  }
+		  catch(Exception e){
+			  e.printStackTrace();
+		  }
+		return attributeCell;
+	  }
+	  
+	  public List<String> getAttributes(MultipartFile attributeReport,String classId)
+	  {
+		  List<String> attributes=new ArrayList<String>();
+		  try
+		  {
+			  XSSFWorkbook cTGWorkbookFin = new XSSFWorkbook(attributeReport.getInputStream());
+			  XSSFSheet worksheetIn = cTGWorkbookFin.getSheetAt(0);
+			  for(int i=2;i < worksheetIn.getLastRowNum();i++) 
+			  {
+				  XSSFRow rowIn = worksheetIn.getRow(i);
+				  if(XSSFCell.CELL_TYPE_NUMERIC==rowIn.getCell(1).getCellType())
+				  {
+					  if(rowIn.getCell(1).getNumericCellValue()==Integer.parseInt(classId))
+					  {
+						  attributes.add(rowIn.getCell(2).getStringCellValue()+"###"+rowIn.getCell(7).getStringCellValue());
+					  }
+				  }
+				  
+			  }
+		  }
+		  catch(Exception e)
+		  {
+			  e.printStackTrace();
+		  }
+		  return attributes;
 	  }
 }
