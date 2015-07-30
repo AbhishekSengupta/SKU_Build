@@ -16,7 +16,8 @@ pocApp.config(['$routeProvider',
         redirectTo: '/errorController'
       });
   }]);
-  
+
+
 
 pocApp.controller('skuUploadController', function($scope,$http) {
 	$scope.placeholder1="Choose File..";
@@ -100,6 +101,7 @@ pocApp.controller('skuUploadController', function($scope,$http) {
             	$scope.uploadFile=function(){
             		if ($scope.showTable)
             		{
+            			$("#loader").attr("style","disply:blocked");
             			$scope.fileArray.append("ContentTemplateGenerator",$scope.file_one);
             			$scope.fileArray.append("AttributeReport",$scope.file_two);
             			$scope.fileArray.append("StaplesMasterStyleGuide",$scope.file_three);
@@ -112,6 +114,7 @@ pocApp.controller('skuUploadController', function($scope,$http) {
             			})
             			.success(function(data, status, headers, config)
             			{
+            				$("#loader").attr("style","disply:none");
             				$scope.filename=data[0];
             				$scope.appTable={"show":true};
             			})
