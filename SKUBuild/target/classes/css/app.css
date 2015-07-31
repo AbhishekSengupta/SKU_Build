@@ -25,3 +25,23 @@
 {
 	background-color: black;
 }
+
+#footer {
+  height: 60px;
+  background-color: #000000;
+  margin-bottom: 0%;
+  position: fixed !important;
+  width: 100%;
+  text-align: center;
+  bottom:0;
+}
+
+.container .credit {
+  margin: 20px 0;
+}
+
+.backgroundImg{
+    background-image: url("../images/background.jpg");
+    background-repeat:no-repeat;
+    background-size:cover;
+}

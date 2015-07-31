@@ -48,7 +48,7 @@ pocApp.controller('skuUploadController', function($scope,$http) {
             };
             reader.readAsDataURL(photofile);
             $(progressBar).attr("style","width:33%");
-    		$scope.percentage="33%";
+    		$scope.percentage="Step 1";
     		$("#firstButtonDiv").removeClass("btn-primary");
     		$("#firstButtonDiv").addClass("btn-success");
     		$("#uploadBtn_2").prop("disabled", false);
@@ -68,7 +68,7 @@ pocApp.controller('skuUploadController', function($scope,$http) {
                 };
                 reader.readAsDataURL(photofile);
                	$(progressBar).attr("style","width:67%");
-               	$scope.percentage="67%";
+               	$scope.percentage="Step 2";
                	$("#secondButtonDiv").removeClass("btn-primary");
         		$("#secondButtonDiv").addClass("btn-success");
                	$("#uploadBtn_3").prop("disabled", false);
@@ -88,7 +88,7 @@ pocApp.controller('skuUploadController', function($scope,$http) {
                     };
                     reader.readAsDataURL(photofile);
                     $(progressBar).attr("style","width:100%	");
-                    $scope.percentage="100%";
+                    $scope.percentage="Step 3";
                     $("#thirdButtonDiv").removeClass("btn-primary");
             		$("#thirdButtonDiv").addClass("btn-success");
             		$("#uploadFile").removeClass("disabled");
@@ -114,9 +114,9 @@ pocApp.controller('skuUploadController', function($scope,$http) {
             			})
             			.success(function(data, status, headers, config)
             			{
-            				$("#loader").attr("style","disply:none");
             				$scope.filename=data[0];
             				$scope.appTable={"show":true};
+            				$("#loader").attr("style","display:none");
             			})
             			.error(function(data, status, headers, config)
             			{
